@@ -1,27 +1,34 @@
-"use strict"
 
 class Sudoku {
   constructor(board_string) {
     this.input = board_string
     this.boardGame = this.board()
+    this.zeroPos = this.zeroIdentifier()
   }
 
   solve() {
-    let zeroPos = this.zeroIdentifier()
-    let board = this.boardGame
-    console.log(zeroPos);
-    for (let i = 0; i < zeroPos.length; i++) {
-      let row = zeroPos[i][0]
-      let column = zeroPos[i][1]
-      if(board[row][column] === 0) {
-        for (let j = 1; j <= 9; j++) {
-          if(this.rowChecker(row,j) && this.columnChecker(column,j) && this.grid_checker(column, row, j)) {
-            board[row][column] = j
+    for (let i = 0; i < this.zeroPos.length; i++) {
+      let row = this.zeroPos[i][0]
+      let column = this.zeroPos[i][1]
+      if(this.boardGame[row][column] == 0) {
+        for (let j = 1; j < 10; j++) {
+          if(this.rowChecker(row,j) && this.columnChecker(column,j) && this.grid_checker(row, column, j)) {
+            this.boardGame[row][column] = j
+            this.reset_board()
+            console.log(this.boardGame);
+            this.sleep(200)
+            let backTrack = this.solve()
+            if(backTrack) {
+              return true
+            } else {
+              this.boardGame[row][column] = 0
+            }
           }
         }
+        return false
       }
     }
-    return board
+    return this.boardGame
   }
 
   // Returns a string representing the current state of the board
@@ -53,11 +60,10 @@ class Sudoku {
   }
 
   zeroIdentifier() {
-    let board = this.boardGame
     let zeroIndex = []
     for (let i = 0; i < 9; i++) {
       for(let j = 0; j< 9; j++) {
-        if(board[i][j] === 0) {
+        if(this.boardGame[i][j] === 0) {
           zeroIndex.push([i,j])
         }
       }
@@ -66,9 +72,8 @@ class Sudoku {
   }
 
   rowChecker(row, num) {
-    let board = this.boardGame
     for (let i = 0; i < 9; i++) {
-      if(board[row][i] === num) {
+      if(this.boardGame[row][i] === num) {
         return false
       }
     }
@@ -76,9 +81,8 @@ class Sudoku {
   }
 
   columnChecker(column, num) {
-    let board = this.boardGame
     for (let i = 0; i < 9; i++) {
-      if(board[i][column] === num) {
+      if(this.boardGame[i][column] === num) {
         return false
       }
     }
@@ -89,20 +93,19 @@ class Sudoku {
         let columnStart = 0;
         let rowStart = 0;
         let boxSize = 3;
-        let board = this.boardGame
         //Checking from left column
         while (column >= columnStart + boxSize) {
             columnStart += boxSize
         }
-        // console.log(columnStart)
+        console.log(columnStart)
         //Checking from top row
         while (row >= rowStart + boxSize) {
             rowStart += boxSize
         }
-        // console.log(rowStart)
+        console.log(rowStart)
         for (let i = columnStart; i < columnStart + boxSize; i++) {
             for (let j = rowStart; j < rowStart + boxSize; j++) {
-                if (board[i][j] === num) {
+                if (this.boardGame[i][j] === num) {
                     return false
                 }
             }
@@ -123,7 +126,7 @@ var game = new Sudoku(board_string)
 
 // Remember: this will just fill out what it can and not "guess"
 
-// console.log(game.board())
+console.log(game.board())
 // console.log(game.zeroIdentifier());
 // console.log(game.rowChecker(0,7));
 console.log(game.solve());
