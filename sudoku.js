@@ -1,12 +1,81 @@
 "use strict"
 
 class Sudoku {
-  constructor(board_string) {}
+  constructor(board_string) {
+  	this.board_arr = this.createBoard(board_string);
+  }
 
-  solve() {}
+  createBoard(board_string) {
+  	let result = [];
+  	for (let i = 0; i < 9; i++) {
+  		let temp = [];
+  		for (let j = 0; j < 9; j++) {
+  			temp.push(board_string[9*i+j])
+  		}
+  		result.push(temp);
+  	}
+  	return result;
+  }
+
+  solve() {
+    let index = {
+      row: 0,
+      column: 0
+    };
+
+    if (!this.findZero(index)) return true;
+    for (let i = 1; i <= 9; ++i) {
+      if (this.isSafe(i, index)) {
+        this.board_arr[index.row][index.column] = i.toString();
+        if (this.solve()) return true;
+        this.board_arr[index.row][index.column] = 0;
+      }
+    }
+
+    return false;
+  }
+
+  findZero(index) {
+    for (index.row = 0; index.row < this.board_arr.length; index.row++) {
+      for (index.column = 0; index.column < this.board_arr.length; index.column++) {
+        if (this.board_arr[index.row][index.column] == 0) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  isSafe(num, index) {
+  	if (!this.checkhorizontal(num, index) && !this.checkvertical(num, index) && !this.checkblock(num, index)) return true;
+  	else return false;
+  }
+
+  checkhorizontal(num, index) {
+  	for (let i = 0; i < 9; i++)
+  		if (this.board_arr[index.row][i] == num) return true;
+    return false;
+  }
+
+  checkvertical(num, index) {
+  	for (let i = 0; i < 9; i++)
+  		if (this.board_arr[i][index.column] == num) return true;
+    return false;
+  }
+
+  checkblock(num, index) {
+  	for (let i = index.row - index.row % 3; i < 3; i++) {
+  		for (let j = index.column - index.column % 3; j < 3; j++) {
+  			if (this.board_arr[i][j] == num) return true;
+  		}
+  	}
+  	return false;
+  }
 
   // Returns a string representing the current state of the board
-  board() {}
+  board() {
+  	return this.board_arr;
+  }
 }
 
 // The file has newlines at the end of each line,
