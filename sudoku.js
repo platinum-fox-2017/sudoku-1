@@ -1,12 +1,126 @@
 "use strict"
 
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds) {
+      break;
+    }
+  }
+}
+
 class Sudoku {
-  constructor(board_string) {}
+  constructor(board_string) {
+    this.board_string = board_string
+    this.boards = []
+  }
 
-  solve() {}
+  solve() {
+    // ---------------------backtrack-----------------------
+    // for(let i = 0 ; i < this.zeroPosition().length ; i++){
+    //   let row = this.zeroPosition()[i][0]
+    //   let column = this.zeroPosition()[i][1]
+    //   for(let angka = this.boards[row][column] ; angka < 11 ; angka++){
+    //     if(this.checkBaris(row,column,angka) && this.checkColoum(row,column,angka) && this.checkArea(row,column,angka)){
+    //       console.log('masuk : ' + angka)
+    //       console.log('posisi masuk : ' + row +' '+ column)
+    //       this.boards[row][column] = angka
+    //       break;
+    //     }
+    //   }
+    //   if(this.boards[row][column] > 9){
+    //     this.boards[row][column] = 0
+    //     i -= 2
+    //   }
+    //   console.log(this.boards)
+    //   sleep(100)
+    // }
+    // return this.boards
 
-  // Returns a string representing the current state of the board
-  board() {}
+    //------------------backtrack recursive --------------------
+    for( let row = 0 ; row < 9 ; row++){
+      for(let column = 0 ; column < 9 ; column++ ){
+        if(this.boards[row][column] == 0){
+          for( let angka = 1 ; angka <= 9 ; angka++){
+            if(this.checkBaris(row,column,angka) && this.checkColoum(row,column,angka) && this.checkArea(row,column,angka)){
+              this.boards[row][column] = angka
+              console.log(this.boards)
+              console.log(`jumlah posisi 0 : ${this.zeroPosition().length}`)
+              sleep(200)
+                if (this.solve()){
+                  return true
+                } else {
+                  this.boards[row][column] = 0
+                }
+              }
+          }
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+
+  board() {
+    let sum = 0
+    for(let i = 0 ; i < 9 ; i++){
+      this.boards.push([])
+      for(let j = 0; j < 9 ; j++){
+        this.boards[i].push(Number(this.board_string[sum]))
+        sum += 1
+      }
+    }
+    return this.boards
+  }
+
+  zeroPosition (){
+    let zeroIndex = []
+    for(let i = 0 ; i < 9 ;i++){
+      for(let j = 0 ; j < 9 ; j++){
+        if(this.boards[i][j] === 0){
+          zeroIndex.push([i,j])
+        }
+      }
+    }
+    return zeroIndex
+  }
+
+  checkBaris(baris,column,angka){
+    let validasiBaris = true
+    for(let i = 0 ; i < 9 ; i ++){
+        if(this.boards[i][column] == angka){
+           validasiBaris = false
+        }
+    }
+    return validasiBaris
+  }
+
+  checkColoum(baris,column,angka){
+    let validasiColumn = true
+    for(  let i  = 0 ; i < 9 ; i++){
+        if(this.boards[baris][i] == angka){
+           validasiColumn = false
+      }
+    }
+    return validasiColumn
+  }
+
+  checkArea(baris,column,angka){
+    let validasiArea = true
+    let row = Math.floor(baris/3)*3
+    let col = Math.floor(column/3)*3
+    for(let i = row ; i < row+3 ; i++){
+      for(let j = col ; j < col+3 ;j++){
+        if(this.boards[i][j] == angka){
+          validasiArea = false
+        }
+      }
+    }
+    return validasiArea
+  }
+
+
 }
 
 // The file has newlines at the end of each line,
@@ -17,8 +131,8 @@ var board_string = fs.readFileSync('set-01_sample.unsolved.txt')
   .split("\n")[0]
 
 var game = new Sudoku(board_string)
-
+game.board()
+// console.log(game.zeroPosition().length)
 // Remember: this will just fill out what it can and not "guess"
 game.solve()
-
-console.log(game.board())
+// console.log(game.board())
