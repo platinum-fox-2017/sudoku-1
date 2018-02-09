@@ -30,7 +30,6 @@ class Sudoku {
         }
       }
     }
-    // console.log(pos)
     return pos
   }
 
@@ -53,14 +52,9 @@ class Sudoku {
   }
 
   checkSquare (row,col,check){
-    // for(let i =0;i<9;i++){
-    //   let batasRow = Math.floor(i/3)*3
-    //   console.log(batasRow,'i ke',i)
-    // }
     let batasRow = Math.floor(row/3)*3
     let batasCol = Math.floor(col/3)*3
     for(let i =batasRow;i<batasRow+3;i++){
-      // console.log(i)
       for(let j=batasCol;j<batasCol+3;j++){
         if(this.sudoBoard[row][col] === check)
         return false
@@ -71,18 +65,23 @@ class Sudoku {
 
   solve() {
     for(let i =0;i<this.zeroPos.length;i++){
-      // console.log(this.zeroPos[i][0],'row',this.zeroPos[i][1],'col')
       let rowZero = this.zeroPos[i][0]
       let colZero = this.zeroPos[i][1]
       if(this.sudoBoard[rowZero][colZero] === 0){
         for(let i =1;i<=9;i++){
           if(this.checkRow(rowZero,i)===true && this.checkCol(colZero,i)===true && this.checkSquare(rowZero,colZero,i)===true){
-            this.sudoBoard[rowZero][colZero] =i
+            this.sudoBoard[rowZero][colZero] = i
             this.reset_board()
             console.log(this.sudoBoard)
-            this.sleep(40)
+            this.sleep(10)
+            if(this.solve()){
+              return true
+            }else{
+              this.sudoBoard[rowZero][colZero] = 0
+            }
           }
         }
+        return false
       }
     }
     return true
@@ -108,14 +107,14 @@ class Sudoku {
 var fs = require('fs')
 var board_string = fs.readFileSync('set-01_sample.unsolved.txt')
   .toString()
-  .split("\n")[0]
+  .split("\n")[1]
 
 var game = new Sudoku(board_string)
 
 // Remember: this will just fill out what it can and not "guess"
 // game.solve()
 
-console.log(game.printBoard())
-console.log(game.emptyPos())
+// console.log(game.printBoard())
+// console.log(game.emptyPos())
 // console.log(game.checkSquare(0,0,0))
 console.log(game.solve())
