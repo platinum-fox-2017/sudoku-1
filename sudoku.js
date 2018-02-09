@@ -52,8 +52,20 @@ class Sudoku {
   }
 
   checkGrid(col, row, values) {
-
+    let gridCol = Math.floor(col / 3) * 3 // 3
+    let gridRow = Math.floor(row / 3) * 3 // 3
+    for (let i = gridRow; i < gridRow + 3; i++) {
+      for (let j = gridCol; j < gridCol + 3; j++) {
+        if (parseInt(this.board()[i][j]) === values) {
+          return false
+        }
+      }
+    }
+    return true
   }
+
+
+  
 
 }
 
@@ -73,7 +85,7 @@ console.log(game.board())
 // console.log(game.ZeroPosition())
 console.log(game.CheckRow(0, 9))
 console.log(game.checkCol(0, 7))
-console.log(game.checkGrid(0, 1, 9))
+console.log(game.checkGrid(0, 1, 7))
 
 
 
