@@ -5,18 +5,18 @@ class Sudoku {
     this.boardData = board_string
     this.gameState = this.board_data_process()
     this.toFill = []
+    this.modifier = 0
+    this.loop = 0
   }
 
   solve() {
     // use this.toFill to parse possible answers
-    // possible answers
     let numbers = [1,2,3,4,5,6,7,8,9];
-
-
     // loop toFill
     for (let f = 0; f < this.toFill.length; f++) {
       var answersUnsorted = [];
       var answer = []
+      // console.log(answersUnsorted, f);
       // console.log(this.toFill[f])
       // check if this node can be solved
       answersUnsorted.push(this.checkHorizontal(this.toFill[f]));
@@ -29,11 +29,9 @@ class Sudoku {
         // console.log(numbers[i]);
         for (let j = 0; j < answersUnsorted.length; j++) {
           for (let k = 0; k < answersUnsorted[j].length; k++) {
-            // if (answersUnsorted[j].length > 0) {
-              if (numbers[i] === answersUnsorted[j][k]) {
-                available.push(true);
-              }
-            // }
+            if (numbers[i] === answersUnsorted[j][k]) {
+              available.push(true);
+            }
           }
         }
         // console.log(available);
@@ -42,31 +40,30 @@ class Sudoku {
         }
         this.toFill[f].answers = answer
       }
-      // console.log(this.toFill[f]);
-      this.fillAnswer(f);
-      if (this.toFill[f].answers.length === 0) {
-        // console.log(this.toFill[f]);
-        // con`sole.log(f);
 
-      }
-      // console.log(this.boardStartMap);
-
+      // this.toFill[f].answers.splice(0, this.modifier)
+      console.log(this.toFill[f]);
+      this.fillAnswer(f)
     }
+  }
 
-    // answer.sort()
-    // console.log(answer);
+  solve_v2(){
+
   }
 
   fillAnswer(f){
+    // console.log('test');
     if (this.toFill[f].answers.length !== 0) {
       // console.log(this.toFill[f].answers[0]);
-      // fill in with first value
-      // console.log(this.boardStartMap[this.toFill[f].coords[0]][this.toFill[f].coords[1]]);
       this.boardStartMap[this.toFill[f].coords[0]][this.toFill[f].coords[1]] = this.toFill[f].answers[0]
+      return false
     } else {
-      // console.log('cannot fill');
+      // reset board, add modifier 1
+      // this.resetBoard()
+      // case 0 if answer.length > 1 add modifier 1
+      // this.modifier = 1;
+      return true
     }
-
   }
 
   board_data_process(){
@@ -89,7 +86,7 @@ class Sudoku {
         // console.log(board_process[side]);
       }
     }
-    this.boardPrint(boardMap)
+    // this.boardPrint(boardMap)
     return this.boardStartMap = boardMap;
   }
 
@@ -98,11 +95,19 @@ class Sudoku {
       if (height === 1) {
         console.log('-----------------');
       }
-      console.log(boardMap[height-1].join(' '));
+      console.log(this.boardStartMap[height-1].join(' '));
       if (height % 3 === 0) {
         console.log('-----------------');
       }
     }
+  }
+
+  resetBoard(){
+    for (var i = 0; i < this.toFill.length; i++) {
+      // console.log(this.toFill[i])
+      this.boardStartMap[this.toFill[i].coords[0]][this.toFill[i].coords[1]] = 0
+    }
+    this.boardPrint()
   }
 
   logCoordinates(){
@@ -162,17 +167,18 @@ class Sudoku {
         filled.push(this.boardStartMap[index.coords[0]][i])
       }
     }
-
+    // console.log(filled);
     // find possible
     for (let j = 0; j < possible.length; j++) {
       // possible[j]
       for (let k = 0; k < filled.length; k++) {
         // filled[k]
         if (possible[j] === filled[k]) {
-          possible.splice(j, 1)
+          possible.splice(j, 1, '')
         }
       }
     }
+    possible.sort().reverse()
     // console.log(possible)
     return possible;
   }
@@ -195,10 +201,11 @@ class Sudoku {
       for (let k = 0; k < filled.length; k++) {
         // filled[k]
         if (possible[j] === filled[k]) {
-          possible.splice(j, 1)
+          possible.splice(j, 1, '')
         }
       }
     }
+    possible.sort().reverse()
     // console.log(possible)
     return possible;
   }
@@ -260,10 +267,11 @@ class Sudoku {
       for (let k = 0; k < filled.length; k++) {
         // filled[k]
         if (possible[j] === filled[k]) {
-          possible.splice(j, 1)
+          possible.splice(j, 1, '')
         }
       }
     }
+    possible.sort().reverse()
     // console.log(possible)
     return possible;
   }
@@ -280,6 +288,7 @@ var game = new Sudoku(board_string)
 
 // Remember: this will just fill out what it can and not "guess"
 game.board()
+game.boardPrint();
 game.logCoordinates()
 // console.log(game.toFill);
 // game.makeCoords(19)
@@ -287,4 +296,7 @@ game.logCoordinates()
 // game.checkVertical(game.toFill[0])
 // game.checkBlock(game.toFill[40])
 game.solve()
-console.log(game.boardStartMap);
+// console.log(game.boardStartMap);
+game.boardPrint();
+// game.resetBoard()
+// game.boardPrint()
