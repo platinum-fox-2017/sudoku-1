@@ -6,20 +6,20 @@ class Sudoku {
     this.zero = this.check_zero()
   }
   solve() {
-    for(let i=0; i<this.zero.length; i++){
+    for (let i = 0; i < this.zero.length; i++) {
       let r0 = this.zero[i][0]
       let c0 = this.zero[i][1]
-      for(let j=1; j<10; j++){
-        if(this.board[r0][c0] == 0){
-          if(this.checker_col(j, c0) && this.checker_row(j, r0) && this.checker_grid(j, r0, c0)){
+      if(this.board[r0][c0] == 0) {
+        for (let j = 1; j < 10; j++) {
+          if(this.checker_row(j,r0) && this.checker_col(j,c0) && this.checker_grid(j, r0, c0)) {
             this.board[r0][c0] = j
-            this.sleep(50)
             this.reset_board()
-            console.log(this.board)
-            if(this.solve()){
+            console.log(this.board);
+            this.sleep(200)
+            let backTrack = this.solve()
+            if(backTrack) {
               return true
-            }
-            else {
+            } else {
               this.board[r0][c0] = 0
             }
           }
@@ -56,28 +56,33 @@ class Sudoku {
    }
 
    checker_col(num, col){
-     let down = [];
-     for(let i = 0; i < 9; i++) {
-       down.push(this.board[i][col]);
+     for(let i=0; i<9; i++){
+       if(this.board[i][col] == num){
+         return false
+       }
      }
-     return (down.indexOf(num) === -1)
+     return true
    }
 
    checker_row(num, row){
-     return (this.board[row].indexOf(num) === -1)
+     if (this.board[row].indexOf(num) !== -1){
+       return false
+     }
+     return true
    }
 
    checker_grid(num, row, col){
      let r = Math.floor(row/3)*3;
      let c = Math.floor(col/3)*3;
 
-     let grid = []
-     for(let i=c; i<c+3; i++){
-       for(let j=r; j<r+3; j++){
-         grid.push(this.board[i][j])
+     for(let i=r; i<r+3; i++){
+       for(let j=c; j<c+3; j++){
+         if(this.board[i][j] == num){
+           return false
+         }
        }
      }
-     return (grid.indexOf(num) === -1)
+     return true
    }
 
   reset_board() {
