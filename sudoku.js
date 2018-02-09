@@ -94,25 +94,25 @@ class Sudoku {
     return intersect
   }
 
-  shoot(){
-    let shot = []
+  filterPossibles(){
+    let shoot = []
     for (let i = 0; i < this.generatePossibles().length;i++){
       if(this.generatePossibles()[i].intersection.length == 1){
-        shot.push(this.generatePossibles()[i])
+        shoot.push(this.generatePossibles()[i])
       }
     }
     // console.log()
-    return shot
+    return shoot
   }
 
   solve() {
-    let data = this.shoot()
+    let data = this.filterPossibles()
 
     for (let i = 0; i < data.length; i++){
       this.boardParsed[data[i].id[0]][data[i].id[1]] = data[i].intersection[0]
     }
 
-    return this.boardParsed
+    return this.boardParsed.map(a => a.map(b => ''+b).join(' ')).join("\n")
   }
 }
 
@@ -129,10 +129,10 @@ var game = new Sudoku(board_string)
 // var game = new Sudoku(board_string2)
 
 // Uncomment below to see 'intersection' of each empty positions
-// console.log(game.shoot())
+// console.log(game.filterPossibles())
 
-// Limitation: if 'intersection' in game.shoot() is not found, board cannot be solved
-while(game.shoot().length > 0){
+// Limitation: if 'intersection' in game.filterPossibles() is not found, board cannot be solved
+while(game.filterPossibles().length > 0){
   game.solve()
 }
 console.log(game.solve())
