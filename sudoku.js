@@ -47,7 +47,9 @@ class Sudoku {
   }
 
   isSafe(num, index) {
-  	if (!this.checkhorizontal(num, index) && !this.checkvertical(num, index) && !this.checkblock(num, index)) return true;
+  	if (!this.checkhorizontal(num, index) && 
+  		!this.checkvertical(num, index) && 
+  		!this.checkblock(num, index.row - index.row % 3, index.column - index.column % 3)) return true;
   	else return false;
   }
 
@@ -63,10 +65,10 @@ class Sudoku {
     return false;
   }
 
-  checkblock(num, index) {
-  	for (let i = index.row - index.row % 3; i < 3; i++) {
-  		for (let j = index.column - index.column % 3; j < 3; j++) {
-  			if (this.board_arr[i][j] == num) return true;
+  checkblock(num, row, column) {
+  	for (let i = 0; i < 3; i++) {
+  		for (let j = 0; j < 3; j++) {
+  			if (this.board_arr[i + row][j + column] == num) return true;
   		}
   	}
   	return false;
@@ -81,10 +83,11 @@ class Sudoku {
 // The file has newlines at the end of each line,
 // so we call split to remove it (\n)
 var fs = require('fs')
-var board_string = fs.readFileSync('set-01_sample.unsolved.txt')
+var board_string = fs.readFileSync('set-02_project-euler_50-easy-puzzles.txt')
   .toString()
-  .split("\n")[0]
+  .split("\n")[49]
 
+// var str = '530070000600195000098000060800060003400803001700020006060000280000419005000080079';
 var game = new Sudoku(board_string)
 
 // Remember: this will just fill out what it can and not "guess"
