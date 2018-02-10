@@ -5,8 +5,6 @@ class Sudoku {
     this.boardData = board_string
     this.gameState = this.board_data_process()
     this.toFill = []
-    // this.modifier = 0
-    // this.loop = 0
   }
 
   solve_v2(){
@@ -14,15 +12,12 @@ class Sudoku {
     limit = 9;
 
     for (var i = 0; i < this.toFill.length;) {
-      // console.log(i);
       index = this.toFill[i].coords;
       rows = this.toFill[i].coords[0];
       sides = this.toFill[i].coords[1];
-
-      // move to next index pos
-
-      numValue = this.boardStartMap[rows][sides] + i
+      numValue = this.boardStartMap[rows][sides] + 1
       valueFound = false;
+      
       while(!valueFound && numValue <= limit){
         if (this.checkArea(numValue, index)) {
           valueFound = true;
@@ -41,21 +36,6 @@ class Sudoku {
     this.boardPrint()
   }
 
-  fillAnswer(f){
-    // console.log('test');
-    if (this.toFill[f].answers.length !== 0) {
-      // console.log(this.toFill[f].answers[0]);
-      this.boardStartMap[this.toFill[f].coords[0]][this.toFill[f].coords[1]] = this.toFill[f].answers[0]
-      return false
-    } else {
-      // reset board, add modifier 1
-      // this.resetBoard()
-      // case 0 if answer.length > 1 add modifier 1
-      // this.modifier = 1;
-      return true
-    }
-  }
-
   board_data_process(){
     let board_process = String(this.boardData).split('')
     board_process.pop()
@@ -64,19 +44,13 @@ class Sudoku {
 
   // Returns a string representing the current state of the board
   board() {
-    // let board_process = String(this.boardData).split('')
-    // board_process.pop()
     let boardMap = [];
-    // loop 9 down
     for (let height = 0; height < 9; height++){
       boardMap.push([]);
-      // loop 9 side
       for (let side = 0; side < 9; side++){
         boardMap[height].push(Number(this.gameState[side+(9*height)]));
-        // console.log(board_process[side]);
       }
     }
-    // this.boardPrint(boardMap)
     return this.boardStartMap = boardMap;
   }
 
@@ -92,19 +66,9 @@ class Sudoku {
     }
   }
 
-  resetBoard(){
-    for (var i = 0; i < this.toFill.length; i++) {
-      // console.log(this.toFill[i])
-      this.boardStartMap[this.toFill[i].coords[0]][this.toFill[i].coords[1]] = 0
-    }
-    this.boardPrint()
-  }
-
   logCoordinates(){
-    // find 0's
     let count = 0;
     for (let i = 0; i < this.gameState.length; i++){
-      // console.log(this.gameState[i], count)
       let toFillBox = {}
       let coords = [];
       if (this.gameState[i] === '0') {
@@ -116,7 +80,6 @@ class Sudoku {
       }
       count += 1; // index
     }
-    // console.log(count, coords);
   }
 
   makeCoords(index){
@@ -135,10 +98,8 @@ class Sudoku {
         side = (index % 9);
       }
     }
-    // let height = Math.floor(index / 9)
     coords.push(height)
     coords.push(side)
-    // console.log(coords);
     return coords
   }
 
@@ -177,7 +138,7 @@ class Sudoku {
       left = 2
       right = 0
     } else {
-      if ((index[1]+1) % 2 === 0 ) { // at the middle
+      if ((index[1]+1) % 3 === 2 ) { // at the middle
         left = 1
         right = 1
       } else { // at the left
@@ -185,12 +146,11 @@ class Sudoku {
         right = 2
       }
     }
-
     if ((index[0]+1) % 3 === 0 ) { // at the bottom
       up = 2
       down = 0
     } else {
-      if ((index[0]+1) % 2 === 0 ) { // at the middle
+      if ((index[0]+1) % 3 === 2 ) { // at the middle
         up = 1
         down = 1
       } else { // at the top
@@ -198,7 +158,6 @@ class Sudoku {
         down = 2
       }
     }
-
     for (let height = index[0]-up; height <= index[0]+down; height++) {
       for (let i = index[1]-left; i <= index[1]+right; i++) {
         if (this.boardStartMap[height][i] === numValue) {
@@ -215,19 +174,11 @@ class Sudoku {
 var fs = require('fs')
 var board_string = fs.readFileSync('set-01_sample.unsolved.txt')
   .toString()
-  .split("\n")[0]
+  .split("\n")[10]
 
 var game = new Sudoku(board_string)
 
-// Remember: this will just fill out what it can and not "guess"
 game.board()
 game.boardPrint();
 game.logCoordinates()
-// console.log(game.toFill);
-// game.makeCoords(19)
-// game.checkHorizontal(5, game.toFill[0])
-// game.checkVertical(game.toFill[0])
-// game.checkBlock(game.toFill[40])
-// game.solve()
-// console.log(game.boardStartMap);
 game.solve_v2()

@@ -10,23 +10,15 @@ class Sudoku {
   }
 
   solve() {
-    // use this.toFill to parse possible answers
     let numbers = [1,2,3,4,5,6,7,8,9];
-    // loop toFill
     for (let f = 0; f < this.toFill.length; f++) {
       var answersUnsorted = [];
       var answer = []
-      // console.log(answersUnsorted, f);
-      // console.log(this.toFill[f])
-      // check if this node can be solved
       answersUnsorted.push(this.checkHorizontal(this.toFill[f]));
       answersUnsorted.push(this.checkVertical(this.toFill[f]));
       answersUnsorted.push(this.checkBlock(this.toFill[f]));
-      // console.log(answersUnsorted, f);
-      // if all true, then pick value....?
       for (let i = 0; i < numbers.length; i++) {
         var available = [];
-        // console.log(numbers[i]);
         for (let j = 0; j < answersUnsorted.length; j++) {
           for (let k = 0; k < answersUnsorted[j].length; k++) {
             if (numbers[i] === answersUnsorted[j][k]) {
@@ -34,34 +26,20 @@ class Sudoku {
             }
           }
         }
-        // console.log(available);
         if (available.length === 3) {
           answer.push(numbers[i])
         }
         this.toFill[f].answers = answer
       }
-
-      // this.toFill[f].answers.splice(0, this.modifier)
-      console.log(this.toFill[f]);
       this.fillAnswer(f)
     }
   }
 
-  solve_v2(){
-
-  }
-
   fillAnswer(f){
-    // console.log('test');
     if (this.toFill[f].answers.length !== 0) {
-      // console.log(this.toFill[f].answers[0]);
       this.boardStartMap[this.toFill[f].coords[0]][this.toFill[f].coords[1]] = this.toFill[f].answers[0]
       return false
     } else {
-      // reset board, add modifier 1
-      // this.resetBoard()
-      // case 0 if answer.length > 1 add modifier 1
-      // this.modifier = 1;
       return true
     }
   }
@@ -74,19 +52,13 @@ class Sudoku {
 
   // Returns a string representing the current state of the board
   board() {
-    // let board_process = String(this.boardData).split('')
-    // board_process.pop()
     let boardMap = [];
-    // loop 9 down
     for (let height = 0; height < 9; height++){
       boardMap.push([]);
-      // loop 9 side
       for (let side = 0; side < 9; side++){
         boardMap[height].push(Number(this.gameState[side+(9*height)]));
-        // console.log(board_process[side]);
       }
     }
-    // this.boardPrint(boardMap)
     return this.boardStartMap = boardMap;
   }
 
@@ -104,29 +76,24 @@ class Sudoku {
 
   resetBoard(){
     for (var i = 0; i < this.toFill.length; i++) {
-      // console.log(this.toFill[i])
       this.boardStartMap[this.toFill[i].coords[0]][this.toFill[i].coords[1]] = 0
     }
     this.boardPrint()
   }
 
   logCoordinates(){
-    // find 0's
     let count = 0;
     for (let i = 0; i < this.gameState.length; i++){
-      // console.log(this.gameState[i], count)
       let toFillBox = {}
       let coords = [];
       if (this.gameState[i] === '0') {
         coords = this.makeCoords(count)
         toFillBox.index = count;
         toFillBox.coords = coords;
-
         this.toFill.push(toFillBox)
       }
       count += 1; // index
     }
-    // console.log(count, coords);
   }
 
   makeCoords(index){
@@ -145,134 +112,96 @@ class Sudoku {
         side = (index % 9);
       }
     }
-    // let height = Math.floor(index / 9)
     coords.push(height)
     coords.push(side)
-    // console.log(coords);
     return coords
   }
 
   checkHorizontal(index){
-    // {index: 0, coords:[y,x]}
-    // loop through [x,0] => [x,9]
-      // if y != i then
-        // if found not 0 then store possible answer
-        // console.log(this.boardStartMap[index.coords[0]][index.coords[1]]);
     let possible = [1,2,3,4,5,6,7,8,9];
     let filled = []; //[ 1, 5, 8, 2 ] on 0
     for (let i = 0; i < 9; i++) {
-      // console.log(this.boardStartMap[index.coords[0]][i]);
       if (index.coords[1] != i && this.boardStartMap[index.coords[0]][i] !== 0) {
-        // console.log(this.boardStartMap[index.coords[0]][i]);
         filled.push(this.boardStartMap[index.coords[0]][i])
       }
     }
-    // console.log(filled);
-    // find possible
     for (let j = 0; j < possible.length; j++) {
-      // possible[j]
       for (let k = 0; k < filled.length; k++) {
-        // filled[k]
         if (possible[j] === filled[k]) {
           possible.splice(j, 1, '')
         }
       }
     }
     possible.sort().reverse()
-    // console.log(possible)
     return possible;
   }
 
   checkVertical(index){
-    // {index: 0, coords:[y,x]}
     let possible = [1,2,3,4,5,6,7,8,9];
     let filled = [];
     for (let i = 0; i < 9; i++) {
-      // console.log(this.boardStartMap[index.coords[0]][i]);
       if (index.coords[0] != i && this.boardStartMap[i][index.coords[1]] !== 0) {
-        // console.log(this.boardStartMap[i][index.coords[1]]);
         filled.push(this.boardStartMap[i][index.coords[1]])
       }
     }
-
-    // find possible
     for (let j = 0; j < possible.length; j++) {
-      // possible[j]
       for (let k = 0; k < filled.length; k++) {
-        // filled[k]
         if (possible[j] === filled[k]) {
           possible.splice(j, 1, '')
         }
       }
     }
     possible.sort().reverse()
-    // console.log(possible)
     return possible;
   }
 
   checkBlock(index){
-    // {index: 0, coords:[y,x]}
     let possible = [1,2,3,4,5,6,7,8,9];
     let filled = [];
-    // x+1
-    // console.log(index.coords);
     let left;
     let right;
     let up;
     let down;
     if ((index.coords[1]+1) % 3 === 0 ) { // at the right
-      // loop from index.coords[1]-2 to index.coords[1]+0
       left = 2
       right = 0
     } else {
-      if ((index.coords[1]+1) % 2 === 0 ) { // at the middle
-        // loop from index.coords[1]-1 to index.coords[1]+1
+      if ((index.coords[1]+1) % 3 === 2 ) { // at the middle
         left = 1
         right = 1
       } else { // at the left
-        // loop from index.coords[1]-0 to index.coords[1]+2
         left = 0
         right = 2
       }
     }
 
     if ((index.coords[0]+1) % 3 === 0 ) { // at the bottom
-      // loop from index.coords[0]-2 to index.coords[1]+0
       up = 2
       down = 0
     } else {
-      if ((index.coords[0]+1) % 2 === 0 ) { // at the middle
-        // loop from index.coords[0]-1 to index.coords[1]+1
+      if ((index.coords[0]+1) % 3 === 2 ) { // at the middle
         up = 1
         down = 1
       } else { // at the top
-        // loop from index.coords[0]-0 to index.coords[1]+2
         up = 0
         down = 2
       }
     }
     for (let height = index.coords[0]-up; height <= index.coords[0]+down; height++) {
       for (let i = index.coords[1]-left; i <= index.coords[1]+right; i++) {
-        // console.log(this.boardStartMap[height][i]);
         if (this.boardStartMap[height][i] !== 0) {
-          // console.log(this.boardStartMap[height][i]);
           filled.push(this.boardStartMap[height][i])
         }
       }
     }
-
-    // find possible
     for (let j = 0; j < possible.length; j++) {
-      // possible[j]
       for (let k = 0; k < filled.length; k++) {
-        // filled[k]
         if (possible[j] === filled[k]) {
           possible.splice(j, 1, '')
         }
       }
     }
     possible.sort().reverse()
-    // console.log(possible)
     return possible;
   }
 }
@@ -290,13 +219,5 @@ var game = new Sudoku(board_string)
 game.board()
 game.boardPrint();
 game.logCoordinates()
-// console.log(game.toFill);
-// game.makeCoords(19)
-// game.checkHorizontal(game.toFill[0])
-// game.checkVertical(game.toFill[0])
-// game.checkBlock(game.toFill[40])
 game.solve()
-// console.log(game.boardStartMap);
 game.boardPrint();
-// game.resetBoard()
-// game.boardPrint()
