@@ -4,7 +4,6 @@ class Sudoku {
   constructor(board_string) {
    this.board_string = board_string; 
    this.boardHorizontal = this.getBoardHorizontal();
-   this.boardVertikal = this.getBoardVertikal();
    this.boardKotak = this.getBoardKotak();
   }
 
@@ -12,38 +11,22 @@ class Sudoku {
     var boardString = this.board_string;
     var boardHorizontal = [];
     //board horizontal 
-    var rowBoard = '';
+    var rowBoard = [];
+    var rowKe = 0;
     for(var i = 0; i <= this.board_string.length; i++){
-      rowBoard += boardString[i];
-      if(i % 9 === 0 && i > 0){
-        var sliceRow = rowBoard.slice(0,rowBoard.length - 1);
-        var sliceRow = sliceRow.replace('undefine','')
-        boardHorizontal.push(sliceRow);  
-        rowBoard[rowBoard.length - 1];
-        rowBoard = rowBoard[rowBoard.length - 1];
+      if(rowKe % 9 === 0 && rowKe > 0){
+        boardHorizontal.push(rowBoard);  
+        rowBoard = [];
+        rowKe = 0;
       }
+      rowBoard.push(boardString[i]);
+      rowKe++;
     }
     return boardHorizontal;
     
     
   }
-  getBoardVertikal(){
-    var boardString = this.board_string;
-    var boardHorizontal = this.boardHorizontal;
-    var boardVertikal = [];
-    //board vertikal
-    var columnBoard = '';
-    for(var i = 0; i < 9; i++){
-      for(var j = 0; j < 9; j++){
-        columnBoard += boardHorizontal[j][i];
-      } 
-      boardVertikal.push(columnBoard);
-      columnBoard = '';
-    }
-    return boardVertikal;
-  }
   getBoardKotak(){
-    var boardString = this.board_string;
     var boardHorizontal = this.boardHorizontal;
     var boardKotak = [];
     
@@ -132,51 +115,66 @@ class Sudoku {
         }  
       }
   }
-  solve() {
-    var boardString = this.board_string;
-    var boardHorizontal = this.boardHorizontal;
-    var boardVertikal = this.boardVertikal;
-    var boardKotak = this.boardKotak;
-    boardString = boardString.split('');
-    var kolomKe = 0;
-    var barisKe = 0;
-    for(var i = 0; i < boardString.length; i++){
-      //posisi kotak
-      kolomKe++;
-      if(i % 9 === 0){
-        barisKe++;  
-        kolomKe = 1;
+  cariKotakKosong(barisKe,kolomKe){
+    var done = false;
+    var barisKolom = [-1, -1];
+
+    while (!done) {
+      if (barisKe == 9) {
+          done = true;
       }
-      var posisiKotak = this.cariPosisiKotak(barisKe,kolomKe);
-      //console.log('Posisi Kotak ',posisiKotak, 'Baris ',barisKe,' Kolom ',kolomKe)
-      if(boardString[i]  == '0'){
-        var isKetemuAngkanya = false;
-        for(var j = 1; j < 10; j++){
-          if(this.cekSemuaSisi(barisKe,kolomKe,posisiKotak,j)){
-              isKetemuAngkanya = true;
-              break;
+      else {
+        if (this.boardHorizontal[barisKe][kolomKe] == 0) {
+            barisKolom[0] = barisKe;
+            barisKolom[1] = kolomKe;
+            done = true;
+        }
+        else {
+          if (kolomKe < 8) {
+              kolomKe++;
+          }
+          else {
+              barisKe++;
+              kolomKe = 0;
           }
         }
-        if(isKetemuAngkanya){
-          var isiAngka = j;  
-        } else {
-          var isiAngka = '0';  
-        }
-        boardString[i] = isiAngka;  
-        this.board_string = boardString.join('')
-        this.boardHorizontal = this.getBoardHorizontal();
-        this.boardVertikal = this.getBoardVertikal();
-        this.boardKotak = this.getBoardKotak();
-      }  
-
+      }
     }
-    //this.board_string = boardString.join('')
+
+    return barisKolom;
+    
+    
+  }
+  solve(barisKe,kolomKe) {
+    var kotakKosong = this.cariKotakKosong(barisKe, kolomKe);
+    barisKe = kotakKosong[0];
+    kolomKe = kotakKosong[1];
+
+    //jika sudah habis berhenti
+    if (barisKe == -1) {
+        return true;
+    }
+
+    for (var num = 1; num <= 9; num++) {
+
+        if ( this.cekSemuaSisi(barisKe, kolomKe, num) ) {   
+            this.boardHorizontal[barisKe][kolomKe] = String(num);
+            //lanjut ke next kosong
+            if ( this.solve(barisKe, kolomKe) ) {                
+                return true;
+            }
+
+        }
+    }
+    //gak ketemu juga, back tracking nya ngulang
+    this.boardHorizontal[barisKe][kolomKe] = 0;
+    return false;
 
   }
-  cekSemuaSisi(barisKe,kolomKe,posisiKotak,num){
-    var cekBaris = this.cekPerbaris(barisKe,num);
+  cekSemuaSisi(barisKe,kolomKe,num){
+     var cekBaris = this.cekPerbaris(barisKe,num);
     var cekKolom = this.cekPerkolom(kolomKe,num);
-    var cekKotak = this.cekPerkotak(posisiKotak,num);
+    var cekKotak = this.cekPerkotak(barisKe,kolomKe,num);
     if(cekBaris && cekKolom && cekKotak){
       return true;  
     } else {
@@ -185,8 +183,8 @@ class Sudoku {
   }
 
   cekPerbaris(barisKe,num){
-      barisKe--;
       var boardHorizontal = this.boardHorizontal;
+
       for(var i = 0; i < boardHorizontal[barisKe].length; i++ ){
         if(num == boardHorizontal[barisKe][i]){
          return false; 
@@ -196,18 +194,19 @@ class Sudoku {
   }
 
   cekPerkolom(kolomKe,num){
-      kolomKe--;
-      var boardVertikal = this.boardVertikal;
-      for(var i = 0; i < boardVertikal[kolomKe].length; i++ ){
-        if(num == boardVertikal[kolomKe][i]){
+      var boardHorizontal = this.boardHorizontal;
+      for(var i = 0; i < 9; i++ ){
+        if(num == boardHorizontal[i][kolomKe]){
          return false; 
         }
       }
       return true;  
   }
 
-  cekPerkotak(kotakKe,num){
+  cekPerkotak(barisKe,kolomKe,num){
+      var kotakKe = this.cariPosisiKotak(barisKe + 1,kolomKe + 1);
       kotakKe--;
+      this.boardKotak = this.getBoardKotak();
       var boardKotak = this.boardKotak;
       for(var i = 0; i < boardKotak[kotakKe].length; i++ ){
         if(num == boardKotak[kotakKe][i]){
@@ -219,23 +218,15 @@ class Sudoku {
 
   // Returns a string representing the current state of the board
   board() {
-    var wholeBoard = [];
-    var rowBoard = '';
-    var boardString = this.board_string;
-    for(var i = 0; i <= this.board_string.length; i++){
-      rowBoard += boardString[i];
-      if(i % 9 === 0 && i > 0){
-        var sliceRow = rowBoard.slice(0,rowBoard.length - 1);
-        var sliceRow = sliceRow.replace('undefine','')
-         sliceRow = sliceRow.split('');
-         sliceRow = sliceRow.join('|');
+    var wholeBoard = "";
 
-        wholeBoard.push(sliceRow);  
-        rowBoard[rowBoard.length - 1];
-        rowBoard = rowBoard[rowBoard.length - 1];
-      }
+    for (var i = 0; i < 9; i++) {
+        for (var j = 0; j < 9; j++) {
+            wholeBoard += this.boardHorizontal[i][j];
+        }
+        wholeBoard += "\n";
     }
-    return wholeBoard.join('\n'); 
+    console.log(wholeBoard);
   }
 }
 
@@ -245,17 +236,14 @@ class Sudoku {
 var fs = require('fs')
 var board_string = fs.readFileSync('set-02_project-euler_50-easy-puzzles.txt')
   .toString()
-  .split("\n")[0]
+  .split("\n")[1]
 
 var game = new Sudoku(board_string)
 
 // Remember: this will just fill out what it can and not "guess"
 console.log("Before Solved -----")
-console.log(game.board())
-game.solve()
-console.log('========================')
-console.log("After Solved -----")
-console.log(game.board())
-//console.log(game.cekPerkotak(1,9));
-//console.log(game.cekPerkolom(1,9));
-//console.log(game.cekPerbaris(3,3));
+game.board()
+game.solve(0,0);
+console.log('After Solved ----')
+game.board()
+//console.log(game.cekPerkotak(0,1,4))
