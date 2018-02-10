@@ -78,7 +78,7 @@ class Sudoku {
         if(this.kordinat[k].char === angka){
           return false;
         }
-      }
+      } 
     }
     return true;
   }
