@@ -69,8 +69,7 @@ class Sudoku {
     }
 
     for (let i = rowCorner; i < rowCorner+size; i++) {
-      for (let j = colCorner; j < colCorner + size; j++) {
-        
+      for (let j = colCorner; j < colCorner + size; j++) {   
         if (board[i][j] === value) {
           return false;
         }
@@ -81,7 +80,6 @@ class Sudoku {
   }
 
   validation(board, col, row, value) {
-    
     if (this.row_check(board, row, value) && this.column_check(board, col, value) && this.square_check(board, col, row, value)) {
       return true;      
     } else {
