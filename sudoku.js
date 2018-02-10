@@ -10,17 +10,16 @@ class Sudoku {
   solve() {
     let row = 0
     let col = 0
-    this.board()
-    this.check_zero()
     console.log(this.board_game);
     for (let i=0; i<this.zeroPos.length; i++) {
       row = Math.floor(this.zeroPos[i]/9)
       col = this.zeroPos[i]%9
       for (let j=this.board_game[row][col]; j<=10; j++) {
-        if(this.check_row(row,j) && this.check_column(col,j) && this.check_area(row,col,j)){
+        if(this.check_column(col,j) && this.check_row(row,j) && this.check_area(row,col,j)){
           this.board_game[row][col] = j.toString()
           this.sleep(15)
           console.log(this.board_game);
+          console.log('================')
           break;
         }
       }
@@ -92,19 +91,21 @@ class Sudoku {
       }
     }
   }
-
 }
 
 
 var fs = require('fs')
 var board_string = fs.readFileSync('set-01_sample.unsolved.txt')
   .toString()
-.split("\n")[6]
+.split("\n")[0]
 
 var game = new Sudoku(board_string)
 
+
+game.board()
+game.check_zero()
 game.solve()
-// game.board()
+
 //console.log(board_string)
 // game.check_row(0,3)
 //console.log(game.board())

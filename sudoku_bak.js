@@ -4,29 +4,10 @@ class Sudoku {
   constructor(board_string) {
     this.board_value = board_string
     this.board_game = []
-    this.zeroPos = []
   }
 
   solve(){
-    this.board()
-    this.check_zero()
-    for(let i=0; i<this.zeroPos.length; i++){
-      let rowZero = this.zeroPos[i][0]
-      let colZero = this.zeroPos[i][1]
-      for(let j=this.board_game[rowZero][colZero]; j<=10; j++){
-        if(this.check_column(colZero,j) && this.check_row(rowZero,j) && this.check_area(rowZero,colZero,j)){
-          this.board_game[rowZero][colZero] = String(j)
-          this.sleep(50)
-          console.log(this.board_game)
-          break
-        }
-      }
-      if(this.board_game[rowZero][colZero] > 9){
-        this.board_game[rowZero][colZero] = '0'
-        i -= 2
-      }
-    }
-    console.log(this.board_game)
+
   }
 
 
@@ -67,41 +48,12 @@ class Sudoku {
   }
 
   check_area(row, col, num){
-    let rowvalue = 0
-    let colvalue = 0
-    let square = 3
-
-    while(col >= colvalue + square){
-      colvalue += square
-    }
-    while(row >= rowvalue + square){
-      rowvalue += square
-    }
-    for(let i=rowvalue; i<rowvalue+square; i++){
-      for(let j=colvalue; j<colvalue+square; j++){
-        if(this.board_game[i][j] === num){
-          return false
-        }
-      }
-    }
-    return true
-  }
-
-  check_zero(){
-    let limit = this.board_value.length
-    let zeroPos = []
-    for(let i=0; i<limit; i++){
-      if(this.board_value[i] === '0'){
-        this.zeroPos.push(i)
-      }
-    }
-  }
-
-  sleep(milliseconds) {
-    var start = new Date().getTime()
-    for (var i = 0; i < 1e7; i++) {
-      if ((new Date().getTime() - start) > milliseconds) {
-        break;
+    let rowvalue = Math.floor(row / 3)* 3
+    let colvalue = Math.floor(col / 3)* 3
+    for(let i=rowvalue; i<rowvalue+3; i++){
+      for(let j=colvalue; j<colvalue+3; j++){
+        // console.log(rowvalue)
+        console.log(this.board_game[i][j])
       }
     }
   }
@@ -119,11 +71,7 @@ var game = new Sudoku(board_string)
 
 // Remember: this will just fill out what it can and not "guess"
 game.solve()
-// game.board()
 
 //console.log(board_string)
-// game.check_row(0,3)
 console.log(game.board())
-console.log('================')
-console.log(game.solve())
-// game.check_zero()
+game.check_area(0,0)
