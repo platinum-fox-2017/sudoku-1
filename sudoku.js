@@ -16,27 +16,6 @@ class Sudoku {
   }
 
   solve() {
-    // ---------------------backtrack-----------------------
-    // for(let i = 0 ; i < this.zeroPosition().length ; i++){
-    //   let row = this.zeroPosition()[i][0]
-    //   let column = this.zeroPosition()[i][1]
-    //   for(let angka = this.boards[row][column] ; angka < 11 ; angka++){
-    //     if(this.checkBaris(row,column,angka) && this.checkColoum(row,column,angka) && this.checkArea(row,column,angka)){
-    //       console.log('masuk : ' + angka)
-    //       console.log('posisi masuk : ' + row +' '+ column)
-    //       this.boards[row][column] = angka
-    //       break;
-    //     }
-    //   }
-    //   if(this.boards[row][column] > 9){
-    //     this.boards[row][column] = 0
-    //     i -= 2
-    //   }
-    //   console.log(this.boards)
-    //   sleep(100)
-    // }
-    // return this.boards
-
     //------------------backtrack recursive --------------------
     for( let row = 0 ; row < 9 ; row++){
       for(let column = 0 ; column < 9 ; column++ ){
@@ -46,14 +25,14 @@ class Sudoku {
               this.boards[row][column] = angka
               console.log(this.boards)
               console.log(`jumlah posisi 0 : ${this.zeroPosition().length}`)
-              sleep(200)
+              sleep(1)
                 if (this.solve()){
                   return true
                 } else {
                   this.boards[row][column] = 0
                 }
               }
-          }
+            }
           return false
         }
       }
@@ -129,8 +108,9 @@ var fs = require('fs')
 var board_string = fs.readFileSync('set-01_sample.unsolved.txt')
   .toString()
   .split("\n")[0]
+let baru = '300906700000005000078000900046008007720000054100300620004000370000100000007403001'
 
-var game = new Sudoku(board_string)
+var game = new Sudoku(baru)
 game.board()
 // console.log(game.zeroPosition().length)
 // Remember: this will just fill out what it can and not "guess"
