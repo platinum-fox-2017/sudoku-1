@@ -115,8 +115,12 @@ var board_string = fs.readFileSync('set-01_sample.unsolved.txt')
   .split("\n")[3]
 
 var game = new Sudoku(board_string)
-
+console.log("\nSudoku Question: ");
+console.log(game.arrBoard);
 // Remember: this will just fill out what it can and not "guess"
 game.solve()
+console.log("\nSudoku Answer: ");
+console.log(game.arrBoard);
 
+console.log("\nAnswer in line: ");
 console.log(game.board())
